@@ -1,5 +1,5 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
     <meta charset="UTF-8">
     <script src="https://code.createjs.com/createjs-2014.12.12.min.js"></script>
@@ -8,19 +8,7 @@
     <canvas id="demo" width="800" height="600" style="background-color:silver;"></canvas>
     <script>
         var stage = new createjs.Stage("demo");
-        createjs.Ticker.addEventListener('tick',function(e){
-            stage.update();
 
-            // 求出相對移動時間
-            var duration=( Math.abs(monster.x-player.x) + Math.abs(monster.y-player.y) )*20;
-
-            // 只有在位置不相等的時候才會追擊
-            if(monster.x!=player.x || monster.y!=player.y){
-                createjs.Tween.get(monster,{override:true}).to({x:player.x,y:player.y},duration).call(function(e){
-                    console.log('fin');
-                });
-            };
-        });
         stage.enableMouseOver();
 
         document.addEventListener('keydown',function(e){
@@ -52,27 +40,28 @@
             animations: {
                 down:{
                     frames:[0,2],
-                    frequency:3,
+                    // frequency:3,
+                    speed: 0.3
                     // next:'down'  /* 如果 Next 是自己可以不用打 */
                 },
                 left:{
                     frames:[12,14], /* 因為3-11是空的 */
-                    frequency:3,
+                    // frequency:3,
+                    speed: 0.3
                 },
                 right:{
                     frames:[24,26],
-                    frequency:3,
+                    // frequency:3,
+                    speed: 0.3
                 },
                 up:{
                     frames:[36,38],
-                    frequency:3,
+                    // frequency:3,
+                    speed: 0.3
                 },
                 /* 剛好裁玩 3*4 的宮格圖 */
             }
         });
-        var player = new createjs.BitmapAnimation(spriteSheet_player);
-        player.gotoAndPlay("down");
-        player.set({x:16,y:16});
 
         // SpriteSheet 部分
         var spriteSheet_monster = new createjs.SpriteSheet({
@@ -81,29 +70,53 @@
             animations: {
                 down:{
                     frames:[0,2],
-                    frequency:3,
+                    // frequency:3,
+                    speed: 0.3
                 },
                 left:{
                     frames:[12,14],
-                    frequency:3,
+                    // frequency:3,
+                    speed: 0.3
                 },
                 right:{
                     frames:[24,26],
-                    frequency:3,
+                    // frequency:3,
+                    speed: 0.3
                 },
                 up:{
                     frames:[36,38],
-                    frequency:3,
+                    // frequency:3,
+                    speed: 0.3
                 },
-            }
+            },
         });
-        var monster = new createjs.BitmapAnimation(spriteSheet_monster);
+
+        var monster = new createjs.Sprite(spriteSheet_monster);
         monster.gotoAndPlay("down");
         monster.set({x:800-16,y:600-16});
+
+        var player = new createjs.Sprite(spriteSheet_player);
+        player.gotoAndPlay("down");
+        player.set({x:16,y:16});
 
         // 把玩家跟怪物嘉到場景
         stage.addChild(monster);
         stage.addChild(player);
+
+        // createjs.Ticker.setFPS(60);
+        createjs.Ticker.addEventListener('tick',function(e){
+            stage.update();
+
+            // 求出相對移動時間
+            var duration=( Math.abs(monster.x-player.x) + Math.abs(monster.y-player.y) )*20;
+
+            // 只有在位置不相等的時候才會追擊
+            if(monster.x!=player.x || monster.y!=player.y){
+                createjs.Tween.get(monster,{override:true}).to({x:player.x,y:player.y},duration).call(function(e){
+                    console.log('fin');
+                });
+            };
+        });
     </script>
 </body>
 </html>
