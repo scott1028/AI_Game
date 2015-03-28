@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.createjs.com/createjs-2014.12.12.min.js"></script>
+    <script src="https://code.createjs.com/movieclip-0.8.0.min.js"></script>
+</head>
+<body>
+    <canvas id="demo1" width="800" height="200" style="background-color:silver;"></canvas>
+    <script type="text/javascript">
+        var stage = new createjs.Stage("demo1");
+        createjs.Ticker.addEventListener("tick", stage);
+        createjs.Ticker.setFPS(60);
+
+        // Create the MovieClip
+        var mc = new createjs.MovieClip(null, 0, true, {start:0, middle:100});
+        stage.addChild(mc);
+
+        // Create the States. Each state is just a circle shape.
+        var state1 = new createjs.Shape(
+                new createjs.Graphics().beginFill("#999999")
+                        .drawCircle(100, 100, 100));
+        var state2 = new createjs.Shape(
+                new createjs.Graphics().beginFill("#5a9cfb")
+                    .drawCircle(100, 100, 100));
+
+        // Create a tween for each shape, animating from one side to the other.
+        mc.timeline.addTween(
+                createjs.Tween.get(state1)
+                        .to({x:0}).to({x:600}, 30).to({x:0}, 30));
+                        // 使用 MovieClip 的後 TweenJS 改為 FPS 概念取代 MillionSecond
+                        // { x: 600 }, N倍的FPS所需時間
+                        // 如果 FPS=1, 這邊設定為=2, 則會移動兩次才到 x=600, FPS跳第一次的時候會移到 300, 第二次移到 600, 簡單來說這個參數是 Clip step 數
+
+                        // 以本案為例 60 FPS, 60 個 Clip Step 的物件會需要 2 秒來完成這個動畫( 1 * 來回 = 2 秒 )
+                        // 然而 30 個 Step 的物件則需要 1 秒即可完成
+
+        mc.timeline.addTween(
+                createjs.Tween.get(state2)
+                        .to({x:600}).to({x:0}, 60).to({x:600}, 60));
+
+        // Play the animation starting from the middle. See the MovieClip constructor above where the labels are specified.
+        mc.gotoAndPlay("start");
+    </script>
+
+    <canvas id="demo2" width="800" height="200" style="background-color:silver;"></canvas>
+    <script type="text/javascript">
+        // http://www.createjs.com/Learn
+
+        var stage2 = new createjs.Stage("demo2");
+        createjs.Ticker.addEventListener("tick", stage2);
+
+        var circle = new createjs.Shape(
+                new createjs.Graphics().beginFill("#555555")
+                        .drawCircle(100, 100, 50));
+
+        stage2.addChild(circle);
+
+        // 3000 == 3 seconds
+        createjs.Tween.get(circle, {loop: true}).to({x: 400}, 1000, createjs.Ease.getPowInOut(3));
+    </script>
+</body>
+</html>

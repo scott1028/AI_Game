@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.createjs.com/createjs-2014.12.12.min.js"></script>
+</head>
+<body>
+    <canvas id="demo" width="800" height="600" style="background-color:silver;"></canvas>
+    <script>
+        var stage = new createjs.Stage("demo");
+        createjs.Ticker.addEventListener('tick',function(e){
+            stage.update();
+
+            // 求出相對移動時間
+            var duration=( Math.abs(monster.x-player.x) + Math.abs(monster.y-player.y) )*20;
+
+            // 只有在位置不相等的時候才會追擊
+            if(monster.x!=player.x || monster.y!=player.y){
+                createjs.Tween.get(monster,{override:true}).to({x:player.x,y:player.y},duration).call(function(e){
+                    console.log('fin');
+                });
+            };
+        });
+        stage.enableMouseOver();
+
+        document.addEventListener('keydown',function(e){
+            //
+            switch(e.keyCode){
+                case 37:
+                    player.currentAnimation!='left' ? player.gotoAndPlay("left") : undefined;
+                    player.x-=5;
+                    break;
+                case 38:
+                    player.currentAnimation!='up' ? player.gotoAndPlay("up") : undefined;
+                    player.y-=5;
+                    break;
+                case 39:
+                    player.currentAnimation!='right' ? player.gotoAndPlay("right") : undefined;
+                    player.x+=5;
+                    break;
+                case 40:
+                    player.currentAnimation!='down' ? player.gotoAndPlay("down") : undefined;
+                    player.y+=5;
+                    break;
+            }
+        });
+
+        // SpriteSheet 部分
+        var spriteSheet_player = new createjs.SpriteSheet({
+            images: ["player.png"],     /* 用整張圖的寬度去除每一張小圖的寬高就知道總共會有多少 Index (由 左至右 + 上至下 計算Index) ，所以如果圖裁的不好會有部分Index Frame 是空圖 */
+            frames: { width:32, height:32, count:48, regX:16, regY:16 },
+            animations: {
+                down:{
+                    frames:[0,2],
+                    frequency:3,
+                    // next:'down'  /* 如果 Next 是自己可以不用打 */
+                },
+                left:{
+                    frames:[12,14], /* 因為3-11是空的 */
+                    frequency:3,
+                },
+                right:{
+                    frames:[24,26],
+                    frequency:3,
+                },
+                up:{
+                    frames:[36,38],
+                    frequency:3,
+                },
+                /* 剛好裁玩 3*4 的宮格圖 */
+            }
+        });
+        var player = new createjs.BitmapAnimation(spriteSheet_player);
+        player.gotoAndPlay("down");
+        player.set({x:16,y:16});
+
+        // SpriteSheet 部分
+        var spriteSheet_monster = new createjs.SpriteSheet({
+            images: ["monster.png"],
+            frames: { width:32, height:32, count:48, regX:16, regY:16 },
+            animations: {
+                down:{
+                    frames:[0,2],
+                    frequency:3,
+                },
+                left:{
+                    frames:[12,14],
+                    frequency:3,
+                },
+                right:{
+                    frames:[24,26],
+                    frequency:3,
+                },
+                up:{
+                    frames:[36,38],
+                    frequency:3,
+                },
+            }
+        });
+        var monster = new createjs.BitmapAnimation(spriteSheet_monster);
+        monster.gotoAndPlay("down");
+        monster.set({x:800-16,y:600-16});
+
+        // 把玩家跟怪物嘉到場景
+        stage.addChild(monster);
+        stage.addChild(player);
+    </script>
+</body>
+</html>
